@@ -1,4 +1,9 @@
-;;; -*- lexical-binding: t; -*-
+;;; init.el --- Initialization file for Heitor's Emacs configuration -*- lexical-binding: t; -*-
+
+;;; Code:
 
 (require 'heitor-emacs-directory)
-(message "My config directory is: %s" heitor-emacs-directory)
+
+(provide 'init)
+
+;;; init.el ends here

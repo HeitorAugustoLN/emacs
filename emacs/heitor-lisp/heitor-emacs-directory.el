@@ -1,4 +1,4 @@
-;;; heitor-emacs-directory.el --- Heitor's Emacs configuration directory  -*- lexical-binding: t; -*-
+;;; heitor-emacs-directory.el --- Heitor's Emacs configuration directory -*- lexical-binding: t; -*-
 
 ;;; Code:
 

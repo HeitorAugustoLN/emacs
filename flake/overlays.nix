@@ -27,7 +27,8 @@
             ) { inherit emacs; };
         in
         {
-          emacs-pgtk-wrapped = wrappedEmacsFor final.emacs31-pgtk;
+          heitor-emacs = wrappedEmacsFor final.emacs;
+          heitor-emacs-pgtk = wrappedEmacsFor final.emacs-pgtk;
 
           emacsPackagesFor =
             emacs:
@@ -46,6 +47,12 @@
                     lastModifiedDate = self.lastModifiedDate or "19700101000000";
                   in
                   "${substring 0 8 lastModifiedDate}.${substring 8 4 lastModifiedDate}";
+
+                meta = {
+                  homepage = "https://github.com/HeitorAugustoLN/emacs";
+                  license = lib.licenses.mit;
+                  maintainers = [ lib.maintainers.HeitorAugustoLN ];
+                };
               in
               {
                 heitor-emacs-configuration = efinal.callPackage (
@@ -54,9 +61,11 @@
                     trivialBuild,
                     linkFarm,
                   }:
-                  trivialBuild {
+                  let
                     pname = "heitor-emacs-configuration";
-                    inherit version;
+                  in
+                  trivialBuild {
+                    inherit pname version;
 
                     src =
                       let
@@ -89,6 +98,14 @@
                         ))
                         (linkFarm "heitor-emacs-configuration-source")
                       ];
+
+                    postBuild = ''
+                      emacs --batch --eval "(progn (require 'package) (package-generate-autoloads \"${pname}\" \".\"))"
+                    '';
+
+                    meta = meta // {
+                      description = "Heitor's Emacs configuration files, packaged as an Emacs package";
+                    };
                   }
                 ) { };
 
@@ -99,7 +116,7 @@
                     inherit version;
 
                     src = writeText "heitor-emacs-directory.el" ''
-                      ;;; heitor-emacs-directory.el --- Heitor's Emacs configuration directory  -*- lexical-binding: t; -*-
+                      ;;; heitor-emacs-directory.el --- Heitor's Emacs configuration directory -*- lexical-binding: t; -*-
 
                       ;;; Code:
 
@@ -110,6 +127,10 @@
 
                       ;;; heitor-emacs-directory.el ends here
                     '';
+
+                    meta = meta // {
+                      description = "Emacs package providing the directory of Heitor's Emacs configuration files";
+                    };
                   }
                 ) { };
               }

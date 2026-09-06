@@ -13,8 +13,9 @@
       };
 
       packages = {
-        default = self'.packages.emacs-pgtk-wrapped;
-        emacs-pgtk-wrapped = pkgs.emacs-pgtk-wrapped;
+        default = self'.packages.heitor-emacs-pgtk;
+        heitor-emacs = pkgs.heitor-emacs;
+        heitor-emacs-pgtk = pkgs.heitor-emacs-pgtk;
       };
     };
 }
