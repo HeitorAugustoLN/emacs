@@ -3,6 +3,9 @@
 ;;; Code:
 
 (require 'heitor-emacs-directory)
+(require 'heitor-modus)
+(require 'heitor-fonts)
+(require 'heitor-dired)
 
 (provide 'init)
 

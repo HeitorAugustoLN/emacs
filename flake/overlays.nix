@@ -60,6 +60,10 @@
                     lib,
                     trivialBuild,
                     linkFarm,
+
+                    fontaine,
+                    hel,
+                    modus-themes,
                   }:
                   let
                     pname = "heitor-emacs-configuration";
@@ -102,6 +106,11 @@
                     postBuild = ''
                       emacs --batch --eval "(progn (require 'package) (package-generate-autoloads \"${pname}\" \".\"))"
                     '';
+
+                    packageRequires = [
+                      fontaine
+                      modus-themes
+                    ];
 
                     meta = meta // {
                       description = "Heitor's Emacs configuration files, packaged as an Emacs package";
