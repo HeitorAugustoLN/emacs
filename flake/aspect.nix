@@ -1,10 +1,4 @@
-{
-  den,
-  inputs,
-  self,
-  ...
-}:
-{
+{ inputs, self, ... }: {
   imports = [
     inputs.den.flakeModule
     (inputs.den.namespace "heitor" true)

@@ -16,7 +16,7 @@
         let
           wrappedEmacsFor =
             emacs:
-            final.callPackage (
+            (final.callPackage (
               { emacs }:
               emacs.pkgs.withPackages (emacsPackages: [
                 # Placed first so `lndir` creates the site-lisp symlink from this package before
@@ -24,7 +24,12 @@
                 emacsPackages.heitor-emacs-directory
                 emacsPackages.heitor-emacs-configuration
               ])
-            ) { inherit emacs; };
+            ) { inherit emacs; }).overrideAttrs
+              (oldAttrs: {
+                passthru = oldAttrs.passthru or { } // {
+                  inherit (emacs) pkgs;
+                };
+              });
         in
         {
           heitor-emacs = wrappedEmacsFor final.emacs;
@@ -61,15 +66,26 @@
                     trivialBuild,
                     linkFarm,
 
+                    # Emacs packages
+                    corfu,
+                    ef-themes,
                     fontaine,
-                    hel,
-                    modus-themes,
+                    ghostel,
+                    marginalia,
+                    move-text,
+                    nix-mode,
+                    nix-ts-mode,
+                    orderless,
+                    vertico,
+
+                    # External dependencies (LSPs, tree-sitter grammars, etc.)
+                    marksman,
+                    nixd,
+                    treesit-grammars,
                   }:
-                  let
+                  trivialBuild (finalAttrs: {
                     pname = "heitor-emacs-configuration";
-                  in
-                  trivialBuild {
-                    inherit pname version;
+                    inherit version;
 
                     src =
                       let
@@ -104,18 +120,67 @@
                       ];
 
                     postBuild = ''
-                      emacs --batch --eval "(progn (require 'package) (package-generate-autoloads \"${pname}\" \".\"))"
+                      emacs --batch --eval "(progn (require 'package) (package-generate-autoloads \"${finalAttrs.pname}\" \".\"))"
                     '';
 
-                    packageRequires = [
-                      fontaine
-                      modus-themes
-                    ];
+                    packageRequires =
+                      let
+                        dependencies = {
+                          emacs = {
+                            packages = [
+                              corfu
+                              ef-themes
+                              fontaine
+                              ghostel
+                              marginalia
+                              move-text
+                              orderless
+                              vertico
+                            ];
+
+                            modes.nix = [
+                              nix-mode
+                              nix-ts-mode
+                            ];
+                          };
+
+                          external = {
+                            languageServers = {
+                              nix = nixd;
+                              markdown = marksman;
+                            };
+
+                            treesitterGrammars = treesit-grammars.with-grammars (grammars: [
+                              grammars.tree-sitter-nix
+                              grammars.tree-sitter-markdown
+                              grammars.tree-sitter-markdown-inline
+                            ]);
+                          };
+                        };
+                      in
+                      let
+                        isDependency =
+                          let
+                            anyPredicate = preds: value: builtins.any (pred: pred value) preds;
+                            allPredicates = preds: value: builtins.all (pred: pred value) preds;
+                          in
+                          anyPredicate [
+                            lib.isDerivation
+                            (allPredicates [
+                              lib.isList
+                              (lib.all lib.isDerivation)
+                            ])
+                          ];
+                      in
+                      lib.pipe dependencies [
+                        (lib.collect isDependency)
+                        lib.flatten
+                      ];
 
                     meta = meta // {
-                      description = "Heitor's Emacs configuration files, packaged as an Emacs package";
+                      description = "Heitor's Emacs configuration, packaged as an Emacs package";
                     };
-                  }
+                  })
                 ) { };
 
                 heitor-emacs-directory = efinal.callPackage (
@@ -138,7 +203,7 @@
                     '';
 
                     meta = meta // {
-                      description = "Emacs package providing the directory of Heitor's Emacs configuration files";
+                      description = "Emacs package providing the directory constant for Heitor's Emacs configuration";
                     };
                   }
                 ) { };
