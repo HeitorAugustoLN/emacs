@@ -3,14 +3,16 @@
 ;;; Code:
 
 (require 'heitor-fonts)
+(require 'heitor-theme)
 (require 'heitor-completion)
 (require 'heitor-emacs-directory)
 (require 'heitor-editorconfig)
 (require 'heitor-eglot)
 (require 'heitor-move-text)
+(require 'heitor-multiple-cursors)
+(require 'heitor-treesitter)
 (require 'heitor-markdown)
 (require 'heitor-nix)
-(require 'heitor-ef-themes)
 (require 'heitor-dired)
 (require 'heitor-ghostel)
 

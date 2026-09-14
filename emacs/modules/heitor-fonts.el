@@ -9,9 +9,9 @@
   (fontaine-presets
     '((regular)
       (t
-        :default-family "Paper Mono"
+        :default-family "Geist Mono"
         :default-height 130
-        :variable-pitch-family "Inter")))
+        :variable-pitch-family "Geist")))
   :config
   (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
   (fontaine-mode 1))

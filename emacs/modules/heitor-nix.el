@@ -7,7 +7,8 @@
 
 (use-package nix-ts-mode
   :ensure t
-  :mode "\\.nix\\'")
+  :mode "\\.nix\\'"
+  :hook (nix-ts-mode . eglot-ensure))
 
 (provide 'heitor-nix)
 

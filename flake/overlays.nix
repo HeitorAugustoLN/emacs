@@ -5,211 +5,219 @@
   ...
 }:
 {
-  flake.overlays.default =
-    let
-      inherit (lib.fixedPoints) composeManyExtensions;
-    in
-    composeManyExtensions [
-      inputs.emacs-overlay.overlays.default
-      (
-        final: prev:
-        let
-          wrappedEmacsFor =
-            emacs:
-            (final.callPackage (
-              { emacs }:
-              emacs.pkgs.withPackages (emacsPackages: [
-                # Placed first so `lndir` creates the site-lisp symlink from this package before
-                # heitor-emacs-configuration can claim the file.
-                emacsPackages.heitor-emacs-directory
-                emacsPackages.heitor-emacs-configuration
-              ])
-            ) { inherit emacs; }).overrideAttrs
-              (oldAttrs: {
-                passthru = oldAttrs.passthru or { } // {
-                  inherit (emacs) pkgs;
-                };
-              });
-        in
-        {
-          heitor-emacs = wrappedEmacsFor final.emacs;
-          heitor-emacs-pgtk = wrappedEmacsFor final.emacs-pgtk;
+  flake.overlays.default = lib.fixedPoints.composeManyExtensions [
+    inputs.emacs-overlay.overlays.default
+    (
+      final: prev:
+      let
+        wrappedEmacsFor =
+          emacs:
+          (final.callPackage (
+            { emacs }:
+            emacs.pkgs.withPackages (emacsPackages: [
+              # Placed first so `lndir` creates the site-lisp symlink from this package before
+              # heitor-emacs-configuration can claim the file.
+              emacsPackages.heitor-emacs-directory
+              emacsPackages.heitor-emacs-configuration
+            ])
+          ) { inherit emacs; }).overrideAttrs
+            (oldAttrs: {
+              passthru = oldAttrs.passthru or { } // {
+                inherit (emacs) pkgs;
+              };
+            });
+      in
+      {
+        heitor-emacs = wrappedEmacsFor final.emacs;
+        heitor-emacs-pgtk = wrappedEmacsFor final.emacs-pgtk;
 
-          emacsPackagesFor =
-            emacs:
-            (prev.emacsPackagesFor emacs).overrideScope (
-              efinal: eprev:
-              let
-                emacsDirectory = builtins.path {
-                  name = "heitor-emacs-directory-source";
-                  path = ../emacs;
-                };
+        emacsPackagesFor =
+          emacs:
+          (prev.emacsPackagesFor emacs).overrideScope (
+            efinal: eprev:
+            let
+              emacsDirectory = builtins.path {
+                name = "heitor-emacs-directory-source";
+                path = ../emacs;
+              };
 
-                # MELPA format: YYYYMMDD.HHMM
-                version =
-                  let
-                    inherit (builtins) substring;
-                    lastModifiedDate = self.lastModifiedDate or "19700101000000";
-                  in
-                  "${substring 0 8 lastModifiedDate}.${substring 8 4 lastModifiedDate}";
+              # MELPA format: YYYYMMDD.HHMM
+              version =
+                let
+                  inherit (builtins) substring;
+                  lastModifiedDate = self.lastModifiedDate or "19700101000000";
+                in
+                "${substring 0 8 lastModifiedDate}.${substring 8 4 lastModifiedDate}";
 
-                meta = {
-                  homepage = "https://github.com/HeitorAugustoLN/emacs";
-                  license = lib.licenses.mit;
-                  maintainers = [ lib.maintainers.HeitorAugustoLN ];
-                };
-              in
-              {
-                heitor-emacs-configuration = efinal.callPackage (
-                  {
-                    lib,
-                    trivialBuild,
-                    linkFarm,
+              meta = {
+                homepage = "https://github.com/HeitorAugustoLN/emacs";
+                license = lib.licenses.mit;
+                maintainers = [ lib.maintainers.HeitorAugustoLN ];
+              };
+            in
+            {
+              heitor-emacs-configuration = efinal.callPackage (
+                {
+                  lib,
+                  trivialBuild,
+                  linkFarm,
 
-                    # Emacs packages
-                    corfu,
-                    ef-themes,
-                    fontaine,
-                    ghostel,
-                    marginalia,
-                    move-text,
-                    nix-mode,
-                    nix-ts-mode,
-                    orderless,
-                    vertico,
+                  # Emacs packages
+                  corfu,
+                  ef-themes,
+                  fontaine,
+                  ghostel,
+                  gnome-dark-style,
+                  marginalia,
+                  multiple-cursors,
+                  move-text,
+                  nix-mode,
+                  nix-ts-mode,
+                  orderless,
+                  treesit-auto,
+                  vertico,
 
-                    # External dependencies (LSPs, tree-sitter grammars, etc.)
-                    marksman,
-                    nixd,
-                    treesit-grammars,
-                  }:
-                  trivialBuild (finalAttrs: {
-                    pname = "heitor-emacs-configuration";
-                    inherit version;
+                  # External dependencies (LSPs, formatters, fonts, treesitter grammars, etc.)
+                  marksman,
+                  nixd,
+                  nixfmt,
+                  treesit-grammars,
+                  geist-font,
+                }:
+                let
+                  inherit (lib.trivial) pipe;
+                in
+                trivialBuild (finalAttrs: {
+                  pname = "heitor-emacs-configuration";
+                  inherit version;
 
-                    src =
+                  src = pipe emacsDirectory [
+                    lib.filesystem.listFilesRecursive
+                    (builtins.filter (lib.strings.hasSuffix ".el"))
+                    (map (
+                      file:
                       let
-                        inherit (builtins) filter;
-                        inherit (lib.filesystem) listFilesRecursive;
-                        inherit (lib.strings) hasSuffix unsafeDiscardStringContext;
-                        inherit (lib.trivial) pipe;
+                        fileName = pipe file [
+                          builtins.unsafeDiscardStringContext
+                          baseNameOf
+                        ];
                       in
-                      pipe emacsDirectory [
-                        listFilesRecursive
-                        (filter (hasSuffix ".el"))
-                        (map (
-                          file:
-                          let
-                            fileName = pipe file [
-                              unsafeDiscardStringContext
-                              baseNameOf
-                            ];
-                          in
+                      {
+                        name =
                           {
-                            name =
-                              {
-                                "init.el" = "default.el";
-                                "early-init.el" = "early-default.el";
-                              }
-                              .${fileName} or fileName;
-
-                            path = file;
+                            "init.el" = "default.el";
+                            "early-init.el" = "early-default.el";
                           }
-                        ))
-                        (linkFarm "heitor-emacs-configuration-source")
-                      ];
+                          .${fileName} or fileName;
 
-                    postBuild = ''
-                      emacs --batch --eval "(progn (require 'package) (package-generate-autoloads \"${finalAttrs.pname}\" \".\"))"
-                    '';
+                        path = file;
+                      }
+                    ))
+                    (linkFarm "heitor-emacs-configuration-source")
+                  ];
 
-                    packageRequires =
-                      let
-                        dependencies = {
-                          emacs = {
-                            packages = [
-                              corfu
-                              ef-themes
-                              fontaine
-                              ghostel
-                              marginalia
-                              move-text
-                              orderless
-                              vertico
-                            ];
+                  postBuild = ''
+                    emacs --batch --eval "
+                      (progn
+                        (require 'package)
+                        (package-generate-autoloads \"${finalAttrs.pname}\" \".\"))"
+                  '';
 
-                            modes.nix = [
-                              nix-mode
-                              nix-ts-mode
-                            ];
+                  packageRequires =
+                    let
+                      dependencies = {
+                        fonts = [ geist-font ];
+
+                        emacsPackages = [
+                          corfu
+                          ef-themes
+                          fontaine
+                          ghostel
+                          gnome-dark-style
+                          marginalia
+                          multiple-cursors
+                          move-text
+                          nix-mode
+                          nix-ts-mode
+                          orderless
+                          treesit-auto
+                          vertico
+                        ];
+
+                        external = {
+                          formatters = {
+                            nix = nixfmt;
                           };
 
-                          external = {
-                            languageServers = {
-                              nix = nixd;
-                              markdown = marksman;
-                            };
-
-                            treesitterGrammars = treesit-grammars.with-grammars (grammars: [
-                              grammars.tree-sitter-nix
-                              grammars.tree-sitter-markdown
-                              grammars.tree-sitter-markdown-inline
-                            ]);
+                          languageServers = {
+                            nix = nixd;
+                            markdown = marksman;
                           };
+
+                          treesitterGrammars = treesit-grammars.with-grammars (grammars: [
+                            grammars.tree-sitter-nix
+                            grammars.tree-sitter-markdown
+                            grammars.tree-sitter-markdown-inline
+                          ]);
                         };
-                      in
-                      let
-                        isDependency =
-                          let
-                            anyPredicate = preds: value: builtins.any (pred: pred value) preds;
-                            allPredicates = preds: value: builtins.all (pred: pred value) preds;
-                          in
-                          anyPredicate [
-                            lib.isDerivation
-                            (allPredicates [
-                              lib.isList
-                              (lib.all lib.isDerivation)
-                            ])
-                          ];
-                      in
-                      lib.pipe dependencies [
-                        (lib.collect isDependency)
-                        lib.flatten
-                      ];
+                      };
+                    in
+                    let
+                      isDependency =
+                        let
+                          inherit (lib.attrsets) isDerivation;
+                          inherit (lib.lists) all;
 
-                    meta = meta // {
-                      description = "Heitor's Emacs configuration, packaged as an Emacs package";
-                    };
-                  })
-                ) { };
+                          anyPredicate = preds: value: builtins.any (pred: pred value) preds;
+                          allPredicates = preds: value: all (pred: pred value) preds;
+                        in
+                        anyPredicate [
+                          isDerivation
+                          (allPredicates [
+                            lib.isList
+                            (all isDerivation)
+                          ])
+                        ];
+                    in
+                    pipe dependencies [
+                      (lib.collect isDependency)
+                      lib.flatten
+                      lib.unique
+                    ];
 
-                heitor-emacs-directory = efinal.callPackage (
-                  { trivialBuild, writeText }:
-                  trivialBuild {
-                    pname = "heitor-emacs-directory";
-                    inherit version;
+                  meta = meta // {
+                    description = "Heitor's Emacs configuration, packaged as an Emacs package";
+                  };
+                })
+              ) { };
 
-                    src = writeText "heitor-emacs-directory.el" ''
-                      ;;; heitor-emacs-directory.el --- Heitor's Emacs configuration directory -*- lexical-binding: t; -*-
+              heitor-emacs-directory = efinal.callPackage (
+                { trivialBuild, writeText }:
+                trivialBuild {
+                  pname = "heitor-emacs-directory";
+                  inherit version;
 
-                      ;;; Code:
+                  src = writeText "heitor-emacs-directory.el" ''
+                    ;;; heitor-emacs-directory.el --- Heitor's Emacs configuration directory -*- lexical-binding: t; -*-
 
-                      (defconst heitor-emacs-directory "${emacsDirectory}/"
-                        "Directory containing Heitor's Emacs configuration files.")
+                    ;;; Code:
 
-                      (provide 'heitor-emacs-directory)
+                    (defconst heitor-emacs-directory "${emacsDirectory}/"
+                      "Directory containing Heitor's Emacs configuration files.")
 
-                      ;;; heitor-emacs-directory.el ends here
-                    '';
+                    (provide 'heitor-emacs-directory)
 
-                    meta = meta // {
-                      description = "Emacs package providing the directory constant for Heitor's Emacs configuration";
-                    };
-                  }
-                ) { };
-              }
-            );
-        }
-      )
-    ];
+                    ;;; heitor-emacs-directory.el ends here
+                  '';
+
+                  meta = meta // {
+                    description = "Emacs package providing the constant for Heitor's Emacs configuration directory";
+                  };
+                }
+              ) { };
+            }
+          );
+      }
+    )
+  ];
 }

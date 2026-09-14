@@ -2,9 +2,7 @@
 
 ;;; Code:
 
-(use-package eglot
-  :hook ((nix-ts-mode . eglot-ensure)
-         (markdown-ts-mode . eglot-ensure)))
+(use-package eglot)
 
 (provide 'heitor-eglot)
 

@@ -8,15 +8,14 @@
   (vertico-mode 1))
 
 (use-package marginalia
-  :after vertico
+  :ensure t
   :config
   (marginalia-mode 1))
 
 (use-package orderless
+  :ensure t
   :custom
-  (completion-styles '(orderless basic))
-  (completion-category-defaults nil)
-  (completion-category-overrides '((file (styles partial-completion)))))
+  (completion-styles '(orderless basic)))
 
 (use-package corfu
   :ensure t

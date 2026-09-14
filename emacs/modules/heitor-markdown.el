@@ -3,7 +3,8 @@
 ;;; Code:
 
 (use-package markdown-ts-mode
-	:mode ("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'"))
+	:mode ("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'")
+  :hook (markdown-ts-mode . eglot-ensure))
 
 (use-package markdown-ts-mode-x
 	:after markdown-ts-mode)
