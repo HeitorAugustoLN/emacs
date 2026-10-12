@@ -86,7 +86,6 @@
                   iosevka,
                   marksman,
                   magit,
-                  majutsu,
                   nixd,
                   nixfmt,
                   treesit-grammars,
@@ -146,7 +145,6 @@
                           ghostel
                           gnome-dark-style
                           magit
-                          majutsu
                           marginalia
                           modus-vague
                           move-text

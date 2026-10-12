@@ -5,10 +5,6 @@
 (use-package magit
   :ensure t)
 
-(use-package majutsu
-  :ensure t
-  :after magit)
-
 (provide 'heitor-version-control)
 
 ;;; heitor-version-control.el ends here
