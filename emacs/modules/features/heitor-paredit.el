@@ -6,7 +6,7 @@
   :ensure t
   :commands paredit-mode
   :hook
-  ((emacs-lisp-mode scheme-mode) . paredit-mode))
+  (emacs-lisp-mode . paredit-mode))
 
 (provide 'heitor-paredit)
 

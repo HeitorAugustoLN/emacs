@@ -6,7 +6,7 @@
   :ensure t
   :commands aggressive-indent-mode
   :hook
-  ((emacs-lisp-mode scheme-mode) . aggressive-indent-mode))
+  (emacs-lisp-mode . aggressive-indent-mode))
 
 (provide 'heitor-aggressive-indent)
 
