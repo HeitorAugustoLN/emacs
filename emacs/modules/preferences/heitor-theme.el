@@ -8,12 +8,12 @@
                                    ":" :omit-empty))))
   "Non-nil when GNOME is among active desktops.")
 
-(use-package modus-vague
-  :vc (:url "https://github.com/paniash/modus-vague"
+(use-package modus-alabaster
+  :vc (:url "https://github.com/dpassen/modus-alabaster"
             :rev :newest
 	          :branch "main")
   :config
-  (load-theme 'modus-vague t))
+  (load-theme 'modus-alabaster-light :no-confirm))
 
 (provide 'heitor-theme)
 

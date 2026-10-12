@@ -71,7 +71,7 @@
                   ghostel,
                   gnome-dark-style,
                   marginalia,
-                  modus-vague,
+                  modus-alabaster,
                   multiple-cursors,
                   move-text,
                   nix-mode,
@@ -146,7 +146,7 @@
                           gnome-dark-style
                           magit
                           marginalia
-                          modus-vague
+                          modus-alabaster
                           move-text
                           multiple-cursors
                           nix-mode
@@ -229,7 +229,7 @@
                 }
               ) { };
 
-              modus-vague = efinal.callPackage (
+              modus-alabaster = efinal.callPackage (
                 {
                   lib,
                   melpaBuild,
@@ -237,21 +237,21 @@
                   modus-themes,
                 }:
                 melpaBuild {
-                  pname = "modus-vague";
+                  pname = "modus-alabaster";
                   version = "0-unstable-2026-09-27";
 
                   src = fetchFromGitHub {
-                    owner = "paniash";
-                    repo = "modus-vague";
-                    rev = "0d21ae3c933a7f8dc8b0a5c8427474d58117a0a4";
-                    hash = "sha256-B0wkmv9fEN2Ax0V/21jVnWEJX0JJxhY4Kb2frQPJ4Xc=";
+                    owner = "dpassen";
+                    repo = "modus-alabaster";
+                    rev = "29369bf9900f1511be20f3021bde0bbe56dc3b28";
+                    hash = "sha256-XOJweRwVn7t4jPMg9GXiZlqGi8e0ccf7sstwZLBHPp0=";
                   };
 
                   packageRequires = [ modus-themes ];
 
                   meta = {
-                    description = "Vague theme for Emacs, built on top of the Modus themes";
-                    homepage = "https://github.com/paniash/modus-vague";
+                    description = "Alabaster themes implemented on top of Modus themes";
+                    homepage = "https://github.com/dpassen/modus-alabaster";
                     license = lib.licenses.gpl3Only;
                     maintainers = [ lib.maintainers.HeitorAugustoLN ];
                   };
