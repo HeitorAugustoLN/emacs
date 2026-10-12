@@ -8,20 +8,12 @@
                                    ":" :omit-empty))))
   "Non-nil when GNOME is among active desktops.")
 
-(use-package ef-themes
-  :ensure t
+(use-package modus-vague
+  :vc (:url "https://github.com/paniash/modus-vague"
+            :rev :newest
+	          :branch "main")
   :config
-  (unless heitor-gnome-session-p
-    (load-theme 'modus-operandi :no-confirm)))
-
-(use-package gnome-dark-style
-  :when heitor-gnome-session-p
-  :ensure t
-  :custom
-  (gnome-light-theme 'modus-operandi)
-  (gnome-dark-theme 'modus-operandi)
-  :config
-  (setopt gnome-dark-style-sync t))
+  (load-theme 'modus-vague t))
 
 (provide 'heitor-theme)
 

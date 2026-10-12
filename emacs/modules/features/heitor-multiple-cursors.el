@@ -8,8 +8,8 @@
   (mc/always-run-for-all t)
   :init
   (which-key-add-key-based-replacements
-    "C-c m" "multiple cursors"
-    "C-c m i" "insert")
+   "C-c m" "multiple cursors"
+   "C-c m i" "insert")
   :bind (("C-S-c C-S-c" . mc/edit-lines)
          ("C-S-<mouse-1>" . mc/add-cursor-on-click)
          ("C->" . mc/mark-next-like-this)

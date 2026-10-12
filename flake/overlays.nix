@@ -29,6 +29,7 @@
       in
       {
         heitor-emacs = wrappedEmacsFor final.emacs;
+        heitor-emacs-nox = wrappedEmacsFor final.emacs-nox;
         heitor-emacs-pgtk = wrappedEmacsFor final.emacs-pgtk;
 
         emacsPackagesFor =
@@ -51,7 +52,7 @@
 
               meta = {
                 homepage = "https://github.com/HeitorAugustoLN/emacs";
-                license = lib.licenses.mit;
+                license = lib.licenses.gpl3Plus;
                 maintainers = [ lib.maintainers.HeitorAugustoLN ];
               };
             in
@@ -63,26 +64,32 @@
                   linkFarm,
 
                   # Emacs packages
+                  aggressive-indent,
                   corfu,
                   ef-themes,
                   fontaine,
                   ghostel,
                   gnome-dark-style,
                   marginalia,
+                  modus-vague,
                   multiple-cursors,
                   move-text,
                   nix-mode,
                   nix-ts-mode,
+                  no-littering,
+                  paredit,
                   orderless,
-                  treesit-auto,
                   vertico,
 
                   # External dependencies (LSPs, formatters, fonts, treesitter grammars, etc.)
+                  adwaita-fonts,
+                  iosevka,
                   marksman,
+                  magit,
+                  majutsu,
                   nixd,
                   nixfmt,
                   treesit-grammars,
-                  geist-font,
                 }:
                 let
                   inherit (lib.trivial) pipe;
@@ -126,21 +133,29 @@
                   packageRequires =
                     let
                       dependencies = {
-                        fonts = [ geist-font ];
+                        fonts = [
+                          adwaita-fonts
+                          iosevka
+                        ];
 
                         emacsPackages = [
+                          aggressive-indent
                           corfu
                           ef-themes
                           fontaine
                           ghostel
                           gnome-dark-style
+                          magit
+                          majutsu
                           marginalia
-                          multiple-cursors
+                          modus-vague
                           move-text
+                          multiple-cursors
                           nix-mode
                           nix-ts-mode
+                          no-littering
+                          paredit
                           orderless
-                          treesit-auto
                           vertico
                         ];
 
@@ -186,7 +201,7 @@
                     ];
 
                   meta = meta // {
-                    description = "Heitor's Emacs configuration, packaged as an Emacs package";
+                    description = "HeitorAugustoLN's Emacs configuration";
                   };
                 })
               ) { };
@@ -211,7 +226,36 @@
                   '';
 
                   meta = meta // {
-                    description = "Emacs package providing the constant for Heitor's Emacs configuration directory";
+                    description = "HeitorAugustoLN's Emacs configuration directory constant";
+                  };
+                }
+              ) { };
+
+              modus-vague = efinal.callPackage (
+                {
+                  lib,
+                  melpaBuild,
+                  fetchFromGitHub,
+                  modus-themes,
+                }:
+                melpaBuild {
+                  pname = "modus-vague";
+                  version = "0-unstable-2026-09-27";
+
+                  src = fetchFromGitHub {
+                    owner = "paniash";
+                    repo = "modus-vague";
+                    rev = "0d21ae3c933a7f8dc8b0a5c8427474d58117a0a4";
+                    hash = "sha256-B0wkmv9fEN2Ax0V/21jVnWEJX0JJxhY4Kb2frQPJ4Xc=";
+                  };
+
+                  packageRequires = [ modus-themes ];
+
+                  meta = {
+                    description = "Vague theme for Emacs, built on top of the Modus themes";
+                    homepage = "https://github.com/paniash/modus-vague";
+                    license = lib.licenses.gpl3Only;
+                    maintainers = [ lib.maintainers.HeitorAugustoLN ];
                   };
                 }
               ) { };

@@ -15,6 +15,7 @@
       packages = {
         default = self'.packages.heitor-emacs-pgtk;
         heitor-emacs = pkgs.heitor-emacs;
+        heitor-emacs-nox = pkgs.heitor-emacs-nox;
         heitor-emacs-pgtk = pkgs.heitor-emacs-pgtk;
       };
     };

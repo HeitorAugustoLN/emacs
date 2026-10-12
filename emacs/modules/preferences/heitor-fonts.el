@@ -7,11 +7,11 @@
   :custom
   (fontaine-latest-state-file (locate-user-emacs-file "fontaine-latest-state.eld"))
   (fontaine-presets
-    '((regular)
-      (t
-        :default-family "Geist Mono"
-        :default-height 130
-        :variable-pitch-family "Geist")))
+   '((regular)
+     (t
+      :default-family "Iosevka"
+      :default-height 140
+      :variable-pitch-family "Adwaita Sans")))
   :config
   (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
   (fontaine-mode 1))
