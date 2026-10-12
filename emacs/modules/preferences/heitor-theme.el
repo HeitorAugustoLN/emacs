@@ -11,7 +11,7 @@
 (use-package modus-alabaster
   :vc (:url "https://github.com/dpassen/modus-alabaster"
             :rev :newest
-	          :branch "main")
+            :branch "main")
   :config
   (load-theme 'modus-alabaster-light :no-confirm))
 
